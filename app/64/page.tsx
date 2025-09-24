@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from 'react'
 import { ReactFlow, type Node, Background, Controls } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
 import { GridMatchNode } from "../../components/grid-match-node"
@@ -9,92 +10,97 @@ const nodeTypes = {
 }
 
 const LAYOUT_CONFIG = {
-  COLUMNS_PER_SECTION: 5,
+  COLUMNS_PER_SECTION: 4,
   TOTAL_SECTIONS: 2,
-  COLUMN_WIDTH: 120,
+  COLUMN_WIDTH: 140,
   ROW_HEIGHT: 100,
-  SECTION_GAP: 720,
+  SECTION_GAP: 600,
 }
 
-const tournamentData = {
-  matches: [
-    { id: "match-1", team1: "001", team2: "002", arena: "Arena 1" },
-    { id: "match-2", team1: "003", team2: "BYE", arena: "" },
-    { id: "match-3", team1: "004", team2: "005", arena: "Arena 2" },
-    { id: "match-4", team1: "006", team2: "BYE", arena: "" },
-    { id: "match-5", team1: "007", team2: "008", arena: "Arena 3" },
-    { id: "match-6", team1: "009", team2: "010", arena: "Arena 4" },
-    { id: "match-7", team1: "011", team2: "BYE", arena: "" },
-    { id: "match-8", team1: "012", team2: "013", arena: "Arena 5" },
-    { id: "match-9", team1: "014", team2: "015", arena: "Arena 6" },
-    { id: "match-10", team1: "016", team2: "BYE", arena: "" },
-    { id: "match-11", team1: "017", team2: "018", arena: "Arena 1" },
-    { id: "match-12", team1: "019", team2: "020", arena: "Arena 2" },
-    { id: "match-13", team1: "021", team2: "BYE", arena: "" },
-    { id: "match-14", team1: "022", team2: "023", arena: "Arena 3" },
-    { id: "match-15", team1: "024", team2: "025", arena: "Arena 4" },
-    { id: "match-16", team1: "024", team2: "025", arena: "Arena 4" },
-    { id: "match-17", team1: "024", team2: "025", arena: "Arena 4" },
-    { id: "match-18", team1: "026", team2: "BYE", arena: "" },
-    { id: "match-19", team1: "017", team2: "018", arena: "Arena 1" },
-    { id: "match-20", team1: "019", team2: "020", arena: "Arena 2" },
-    { id: "match-21", team1: "021", team2: "BYE", arena: "" },
-    { id: "match-22", team1: "022", team2: "023", arena: "Arena 3" },
-    { id: "match-23", team1: "024", team2: "025", arena: "Arena 4" },
-    { id: "match-24", team1: "024", team2: "025", arena: "Arena 4" },
-    { id: "match-25", team1: "024", team2: "025", arena: "Arena 4" },
-    { id: "match-26", team1: "017", team2: "018", arena: "Arena 1" },
-    { id: "match-27", team1: "019", team2: "020", arena: "Arena 2" },
-    { id: "match-28", team1: "021", team2: "BYE", arena: "" },
-    { id: "match-29", team1: "022", team2: "023", arena: "Arena 3" },
-    { id: "match-30", team1: "024", team2: "025", arena: "Arena 4" },
-    { id: "match-31", team1: "024", team2: "025", arena: "Arena 4" },
-    { id: "match-32", team1: "024", team2: "025", arena: "Arena 4" },
-    { id: "match-33", team1: "017", team2: "018", arena: "Arena 1" },
-    { id: "match-34", team1: "019", team2: "020", arena: "Arena 2" },
-    { id: "match-35", team1: "021", team2: "BYE", arena: "" },
+export default function Tournament64() {
+  const [matches, setMatches] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-    // Add more matches as needed - this is just a sample
-  ],
-}
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/scoring-64')
+        if (!response.ok) {
+          throw new Error('Failed to fetch tournament data')
+        }
+        const data = await response.json()
+        setMatches(data)
+        setError(null)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error')
+      } finally {
+        setLoading(false)
+      }
+    }
 
-function generateTournamentNodes() {
-  const validMatches = tournamentData.matches.filter((match) => !(match.team1 === "BYE" && match.team2 === "BYE"))
+    fetchData()
+    
+    // Auto-refresh every 10 seconds
+    const intervalId = setInterval(fetchData, 10000)
+    return () => clearInterval(intervalId)
+  }, [])
 
-  const nodes: Node[] = []
+  function generateTournamentNodes() {
+    const validMatches = matches.filter((match) => !(match.team1Number === "BYE" && match.team2Number === "BYE"))
 
-  validMatches.forEach((match, index) => {
-    const totalColumns = LAYOUT_CONFIG.COLUMNS_PER_SECTION * LAYOUT_CONFIG.TOTAL_SECTIONS
-    const row = Math.floor(index / totalColumns)
-    const col = index % totalColumns
+    const nodes: Node[] = []
 
-    const isRightSection = col >= LAYOUT_CONFIG.COLUMNS_PER_SECTION
-    const adjustedCol = isRightSection ? col - LAYOUT_CONFIG.COLUMNS_PER_SECTION : col
-    const xPosition = adjustedCol * LAYOUT_CONFIG.COLUMN_WIDTH + (isRightSection ? LAYOUT_CONFIG.SECTION_GAP : 0)
+    validMatches.forEach((match, index) => {
+      const totalColumns = LAYOUT_CONFIG.COLUMNS_PER_SECTION * LAYOUT_CONFIG.TOTAL_SECTIONS
+      const row = Math.floor(index / totalColumns)
+      const col = index % totalColumns
 
-    nodes.push({
-      id: match.id,
-      type: "gridMatch",
-      position: {
-        x: xPosition,
-        y: row * LAYOUT_CONFIG.ROW_HEIGHT + 50,
-      },
-      data: {
-        team1: match.team1,
-        team2: match.team2,
-        arena: match.arena,
-        isBye: match.team1 === "BYE" || match.team2 === "BYE",
-      },
+      const isRightSection = col >= LAYOUT_CONFIG.COLUMNS_PER_SECTION
+      const adjustedCol = isRightSection ? col - LAYOUT_CONFIG.COLUMNS_PER_SECTION : col
+      const xPosition = adjustedCol * LAYOUT_CONFIG.COLUMN_WIDTH + (isRightSection ? LAYOUT_CONFIG.SECTION_GAP : 0)
+
+      nodes.push({
+        id: `match-${index}`,
+        type: "gridMatch",
+        position: {
+          x: xPosition,
+          y: row * LAYOUT_CONFIG.ROW_HEIGHT + 50,
+        },
+        data: {
+          team1Number: match.team1Number || '',
+          team2Number: match.team2Number || '',
+          arena: match.arena || '',
+          score1: match.score1 || '',
+          score2: match.score2 || '',
+          status: match.status || 'Not Started',
+          winner: match.winner || '',
+          winnerDisplay: match.winnerDisplay || '',
+          isBye: match.isBye
+        },
+      })
     })
-  })
 
+    return nodes
+  }
 
-
-  return nodes
-}
-
-export default function Tournament128() {
   const nodes: Node[] = generateTournamentNodes()
+
+  if (loading) {
+    return (
+      <div className="h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading tournament data...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="h-screen bg-black flex items-center justify-center">
+        <div className="text-red-500 text-xl">Error: {error}</div>
+      </div>
+    )
+  }
 
   return (
     <div className="h-screen bg-black">
@@ -114,13 +120,7 @@ export default function Tournament128() {
         <Background color="#ffffff" gap={20} size={1} />
         <Controls
           position="bottom-left"
-          style={{
-            button: {
-              backgroundColor: "#374151",
-              color: "white",
-              border: "1px solid #6b7280",
-            },
-          }}
+          className="custom-controls"
         />
       </ReactFlow>
     </div>
