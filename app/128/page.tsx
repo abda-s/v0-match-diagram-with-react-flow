@@ -12,9 +12,9 @@ const nodeTypes = {
 const LAYOUT_CONFIG = {
   COLUMNS_PER_SECTION: 5,
   TOTAL_SECTIONS: 2,
-  COLUMN_WIDTH: 140,
+  COLUMN_WIDTH: 160,
   ROW_HEIGHT: 100,
-  SECTION_GAP: 820,
+  SECTION_GAP: 5*160,
 }
 
 export default function Tournament128() {
@@ -104,6 +104,7 @@ export default function Tournament128() {
 
   return (
     <div className="h-screen bg-white">
+      <div className="h-full bg-[url('/BG-3.png')] bg-cover bg-center">
       <ReactFlow
         nodes={nodes}
         nodeTypes={nodeTypes}
@@ -118,11 +119,10 @@ export default function Tournament128() {
         maxZoom={2}
       >
         
-        <Controls
-          position="bottom-left"
-          className="custom-controls"
-        />
+
+        
       </ReactFlow>
+      </div>
     </div>
   )
 }
