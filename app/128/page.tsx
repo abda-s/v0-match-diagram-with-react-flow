@@ -36,7 +36,7 @@ export default function Tournament128() {
         setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
         setLoading(false)
-      }
+      } 
     }
 
     fetchData()
@@ -103,7 +103,7 @@ export default function Tournament128() {
   }
 
   return (
-    <div className="h-screen bg-black">
+    <div className="h-screen bg-white">
       <ReactFlow
         nodes={nodes}
         nodeTypes={nodeTypes}
@@ -117,7 +117,7 @@ export default function Tournament128() {
         minZoom={0.5}
         maxZoom={2}
       >
-        <Background color="#ffffff" gap={20} size={1} />
+        
         <Controls
           position="bottom-left"
           className="custom-controls"
