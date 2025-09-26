@@ -40,17 +40,14 @@ const getQualifiedTeams = (matches) => {
 // Custom ordering for different rounds
 const getMatchOrder = (roundIndex, totalMatches) => {
   if (roundIndex === 0) { // Round 32
-
     const rightOrder = [14,6,2,10,4,12,8,0];
     const leftOrder = [15,7,3,11,5,13,9,1]; 
     return [...rightOrder, ...leftOrder];
   } else if (roundIndex === 1) { // Round 16
-
     const rightOrder = [6,2,4,0];
     const leftOrder = [7,3,5,1];
     return [...rightOrder, ...leftOrder];
   } else if (roundIndex === 2) { // Round 8
-
     const rightOrder = [2,0];
     const leftOrder = [3,1];
     return [...rightOrder, ...leftOrder];
@@ -224,7 +221,7 @@ function TournamentBracket() {
     if (fetchingRound) {
       const intervalId = setInterval(() => {
         fetchRoundData(fetchingRound);
-      }, 10000);
+      }, 30000);
       
       return () => clearInterval(intervalId);
     }
@@ -356,6 +353,28 @@ function TournamentBracket() {
       })
     };
 
+    // Helper function to find which parent matches feed into a current match
+    const getParentMatches = (currentRoundIndex, currentMatchIndex) => {
+      if (currentRoundIndex === 0) return []; // First round has no parents
+      
+      const prevRound = mergedData.rounds[currentRoundIndex - 1];
+      if (!prevRound.matches) return [];
+      
+      // Each match in the current round receives from 2 matches in the previous round
+      const parentMatch1Index = currentMatchIndex * 2;
+      const parentMatch2Index = currentMatchIndex * 2 + 1;
+      
+      const parentMatches = [];
+      if (parentMatch1Index < prevRound.matches.length) {
+        parentMatches.push(prevRound.matches[parentMatch1Index]);
+      }
+      if (parentMatch2Index < prevRound.matches.length) {
+        parentMatches.push(prevRound.matches[parentMatch2Index]);
+      }
+      
+      return parentMatches;
+    };
+
     mergedData.rounds.forEach((round, roundIndex) => {
       if (round.qualifiedTeams) {
         // Display qualified teams
@@ -415,30 +434,21 @@ function TournamentBracket() {
           const startY = centerY - totalHeight / 2;
           nodeY = startY + sideMatchIndex * baseMatchSpacing;
         } else {
-          // For subsequent rounds, we need to map back to the original indices for positioning
-          const originalMatchOrder = getMatchOrder(roundIndex - 1, mergedData.rounds[roundIndex - 1].matches.length);
-          const parentMatch1OriginalIndex = matchIndex * 2;
-          const parentMatch2OriginalIndex = matchIndex * 2 + 1;
+          // For subsequent rounds, calculate average Y position of parent matches
+          const parentMatches = getParentMatches(roundIndex, matchIndex);
           
-          // Find where these original indices appear in the reordered list
-          const parentMatch1DisplayIndex = originalMatchOrder.indexOf(parentMatch1OriginalIndex);
-          const parentMatch2DisplayIndex = originalMatchOrder.indexOf(parentMatch2OriginalIndex);
-          
-          const prevRound = mergedData.rounds[roundIndex - 1];
-
-          if (parentMatch1DisplayIndex >= 0 && parentMatch2DisplayIndex >= 0 && 
-              parentMatch1DisplayIndex < prevRound.matches.length && 
-              parentMatch2DisplayIndex < prevRound.matches.length) {
-            const parent1Id = prevRound.matches[parentMatch1DisplayIndex].id;
-            const parent2Id = prevRound.matches[parentMatch2DisplayIndex].id;
-            const parent1Pos = nodePositions[parent1Id];
-            const parent2Pos = nodePositions[parent2Id];
-
-            if (parent1Pos && parent2Pos) {
-              // Average Y position of parent matches
-              nodeY = (parent1Pos.y + parent2Pos.y) / 2;
+          if (parentMatches.length > 0) {
+            // Get the positions of parent matches
+            const parentPositions = parentMatches
+              .map(parent => nodePositions[parent.id])
+              .filter(pos => pos !== undefined);
+            
+            if (parentPositions.length > 0) {
+              // Calculate average Y position
+              const avgY = parentPositions.reduce((sum, pos) => sum + pos.y, 0) / parentPositions.length;
+              nodeY = avgY;
             } else {
-              // Fallback to center if parents not found
+              // Fallback to center if parent positions not found
               nodeY = centerY;
             }
           } else {
@@ -608,7 +618,7 @@ function TournamentBracket() {
 
   return (
     <div className="w-full h-screen bg-black">
-      <div className="absolute top-4 left-4 z-10 bg-black bg-opacity-70 text-white p-3 rounded-lg">
+      {/* <div className="absolute top-4 left-4 z-10 bg-black bg-opacity-70 text-white p-3 rounded-lg">
         <h2 className="text-lg font-bold">Tournament Progress</h2>
         <p className="text-sm opacity-75">
           {fetchingRound === '32' && `Round of 32: ${round32.filter(m => m.status === 'Completed').length}/${round32.length || 16} matches completed`}
@@ -616,7 +626,7 @@ function TournamentBracket() {
           {fetchingRound === '8' && `Quarter Finals: ${round8.filter(m => m.status === 'Completed').length}/${round8.length || 4} matches completed`}
           {!fetchingRound && round8.length > 0 && isRoundCompleted(round8,4) && 'Tournament Completed'}
         </p>
-      </div>
+      </div> */}
       
       <ReactFlow
         nodes={nodes}

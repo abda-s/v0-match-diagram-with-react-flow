@@ -29,7 +29,7 @@ export function MatchNode({ data }: NodeProps<MatchData>) {
   // Determine what to show in the middle section
   const getMiddleContent = () => {
     if (data.status === 'Completed') {
-      return `Winner: ${data.winnerDisplay || data.winner}`;
+      return `Winner: ${data.winner}`;
     }
     if (data.status === 'In Progress' && data.score1 && data.score2) {
       return `${data.score1} - ${data.score2}`;

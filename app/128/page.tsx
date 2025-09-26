@@ -42,7 +42,7 @@ export default function Tournament128() {
     fetchData()
     
     // Auto-refresh every 10 seconds
-    const intervalId = setInterval(fetchData, 100000)
+    const intervalId = setInterval(fetchData, 30000)
     return () => clearInterval(intervalId)
   }, [])
 
