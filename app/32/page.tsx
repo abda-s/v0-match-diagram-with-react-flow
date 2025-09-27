@@ -641,8 +641,7 @@ function TournamentBracket() {
         maxZoom={1.5}
         defaultViewport={{ x: 0, y: 0, zoom: 1 }}
       >
-        <Controls />
-        <Background />
+
       </ReactFlow>
     </div>
   );
