@@ -3,6 +3,8 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 interface GridMatchData {
   team1Number: string
   team2Number: string
+  team1Display: string // Added to fix a missing property in the original logic for team display
+  team2Display: string // Added to fix a missing property in the original logic for team display
   arena?: string
   score1?: string
   score2?: string
@@ -16,7 +18,7 @@ export function GridMatchNode({ data }: { data: GridMatchData }) {
   if (data.isBye) {
     return (
       <div className="bg-white rounded-lg shadow-lg min-w-[180px]">
-        {/* Team 1 - Red background */}
+        {/* Team 1 - Red background (as was in original BYE logic) */}
         <div className="border-gray-300 border-2 bg-primary text-white px-2 py-0.5 rounded-t-lg text-center font-semibold text-sm">
           {data.team1Display}
         </div>
@@ -30,16 +32,11 @@ export function GridMatchNode({ data }: { data: GridMatchData }) {
       </div>
     )
   }
-
-  const hasScores = data.score1 || data.score2;
   
-  const getTeamColor = () => {
-    return hasScores ? 'bg-primary' : 'bg-gray-500';
-  }
-
+  // Logic to determine the middle content (scores, status, arena)
   const getMiddleContent = () => {
     if (data.status === 'Completed') {
-      return `${data.winnerDisplay}`; // Assuming data.winner holds the team number, e.g., "T1", "T2"
+      return `${data.winnerDisplay}`; // Assuming data.winnerDisplay holds the winner's name
     }
     if (data.status === 'In Progress' && data.score1 && data.score2) {
       return `${data.score1} - ${data.score2}`;
@@ -50,16 +47,18 @@ export function GridMatchNode({ data }: { data: GridMatchData }) {
     return data.status || 'Not Started';
   }
 
-  // Determine border for team 1
-  const team1BorderClass = data.winner === data.team1Number && data.status === 'Completed' ? 'border-3 border-green-500' : 'border-2 border-gray-300';
-  // Determine border for team 2
-  const team2BorderClass = data.winner === data.team2Number && data.status === 'Completed' ? 'border-3 border-green-500' : 'border-2 border-gray-300';
+  // Determine the background color for team 1: red if winner, gray otherwise
+  const team1BgClass = data.winner === data.team1Number && data.status === 'Completed' ? 'bg-primary' : 'bg-gray-500';
+  // Determine the background color for team 2: red if winner, gray otherwise
+  const team2BgClass = data.winner === data.team2Number && data.status === 'Completed' ? 'bg-primary' : 'bg-gray-500';
+
+  // Use a standard gray border for both teams
+  const standardBorderClass = 'border-2 border-gray-300';
 
   return (
-    // The main container border remains gray if no winner is overall
     <div className="bg-white rounded-lg shadow-lg min-w-[180px]">
-      {/* Team 1 */}
-      <div className={`${getTeamColor()} px-2 py-0.5 ${team1BorderClass} rounded-t-lg text-center font-bold text-sm flex items-center justify-center`}>
+      {/* Team 1 - Highlight winner with red background */}
+      <div className={`${team1BgClass} px-2 py-0.5 ${standardBorderClass} rounded-t-lg text-center font-bold text-sm flex items-center justify-center`}>
         <span className="text-white">{data.team1Display}</span>
       </div>
 
@@ -68,8 +67,8 @@ export function GridMatchNode({ data }: { data: GridMatchData }) {
         {getMiddleContent()}
       </div>
 
-      {/* Team 2 */}
-      <div className={`${getTeamColor()} px-2 py-0.5 ${team2BorderClass} rounded-b-lg text-center font-semibold text-sm flex items-center justify-center`}>
+      {/* Team 2 - Highlight winner with red background */}
+      <div className={`${team2BgClass} px-2 py-0.5 ${standardBorderClass} rounded-b-lg text-center font-semibold text-sm flex items-center justify-center`}>
         <span className="text-white">{data.team2Display}</span>
       </div>
     </div>
