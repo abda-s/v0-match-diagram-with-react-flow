@@ -62,7 +62,7 @@ export function MatchNode({ data }: NodeProps<MatchData>) {
       </div>
 
       {/* Middle section - scores, arena, or status */}
-      <div className="bg-white px-4 py-2 text-center font-medium text-white text-sm border-y border-gray-200">
+      <div className="bg-white px-4 py-2 text-center font-medium text-black text-sm border-y border-gray-200">
         {getMiddleContent()}
       </div>
 
