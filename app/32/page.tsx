@@ -293,9 +293,14 @@ function TournamentBracket() {
           matches = tournamentStructure.rounds[1].matches.map((match, index) => {
             if (round16.length > 0 && index < round16.length) {
               const fetchedMatch = round16[index];
-              return {
+                // Adjust arena number: if 3 -> 1, if 4 -> 2, else keep as is
+                let arena = fetchedMatch.arena || "";
+                if (arena === "3") arena = "1";
+                else if (arena === "4") arena = "2";
+
+                return {
                 ...match,
-                arena: fetchedMatch.arena || "",
+                arena,
                 team1Number: fetchedMatch.team1Number || "TBP",
                 team1Name: fetchedMatch.team1Name || "TBP",
                 team1Display: fetchedMatch.team1Display || "TBP",
@@ -308,7 +313,7 @@ function TournamentBracket() {
                 winner: fetchedMatch.winner || "",
                 winnerDisplay: fetchedMatch.winnerDisplay || "",
                 isBye: fetchedMatch.isBye || false
-              };
+                };
             }
             return match;
           });
@@ -323,9 +328,14 @@ function TournamentBracket() {
           matches = tournamentStructure.rounds[2].matches.map((match, index) => {
             if (round8.length > 0 && index < round8.length) {
               const fetchedMatch = round8[index];
-              return {
+                // Adjust arena number: if 3 -> 1, if 4 -> 2, else keep as is
+                let arena = fetchedMatch.arena || "";
+                if (arena === "3") arena = "1";
+                else if (arena === "4") arena = "2";
+
+                return {
                 ...match,
-                arena: fetchedMatch.arena || "",
+                arena,
                 team1Number: fetchedMatch.team1Number || "TBP",
                 team1Name: fetchedMatch.team1Name || "TBP",
                 team1Display: fetchedMatch.team1Display || "TBP",
@@ -338,7 +348,7 @@ function TournamentBracket() {
                 winner: fetchedMatch.winner || "",
                 winnerDisplay: fetchedMatch.winnerDisplay || "",
                 isBye: fetchedMatch.isBye || false
-              };
+                };
             }
             return match;
           });
