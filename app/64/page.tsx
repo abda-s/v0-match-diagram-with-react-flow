@@ -12,9 +12,9 @@ const nodeTypes = {
 const LAYOUT_CONFIG = {
   COLUMNS_PER_SECTION: 4,
   TOTAL_SECTIONS: 2,
-  COLUMN_WIDTH: 140,
+  COLUMN_WIDTH: 200,
   ROW_HEIGHT: 100,
-  SECTION_GAP: 600,
+  SECTION_GAP: 4*200,
 }
 
 export default function Tournament64() {
@@ -70,6 +70,8 @@ export default function Tournament64() {
         data: {
           team1Number: match.team1Number || '',
           team2Number: match.team2Number || '',
+          team1Display: match.team1Display ||'',
+          team2Display: match.team2Display || '',
           arena: match.arena || '',
           score1: match.score1 || '',
           score2: match.score2 || '',
