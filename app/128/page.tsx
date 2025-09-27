@@ -12,9 +12,9 @@ const nodeTypes = {
 const LAYOUT_CONFIG = {
   COLUMNS_PER_SECTION: 5,
   TOTAL_SECTIONS: 2,
-  COLUMN_WIDTH: 160,
+  COLUMN_WIDTH: 200,
   ROW_HEIGHT: 100,
-  SECTION_GAP: 5*160,
+  SECTION_GAP: 5*200,
 }
 
 export default function Tournament128() {
@@ -70,6 +70,8 @@ export default function Tournament128() {
         data: {
           team1Number: match.team1Number || '',
           team2Number: match.team2Number || '',
+          team1Display: match.team1Display ||'',
+          team2Display: match.team2Display || '',
           arena: match.arena || '',
           score1: match.score1 || '',
           score2: match.score2 || '',
@@ -103,8 +105,8 @@ export default function Tournament128() {
   }
 
   return (
-    <div className="h-screen bg-white">
-      <div className="h-full bg-[url('/BG-3.png')] bg-cover bg-center">
+    <div className="h-screen bg-black">
+      {/* <div className="h-full bg-[url('/BG-3.png')] bg-cover bg-center"> */}
       <ReactFlow
         nodes={nodes}
         nodeTypes={nodeTypes}
@@ -116,13 +118,13 @@ export default function Tournament128() {
         panOnDrag={true}
         zoomOnScroll={true}
         minZoom={0.5}
-        maxZoom={2}
+        maxZoom={1.5}
       >
         
 
         
       </ReactFlow>
-      </div>
+      {/* </div> */}
     </div>
   )
 }

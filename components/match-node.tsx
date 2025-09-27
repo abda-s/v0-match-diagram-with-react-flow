@@ -23,7 +23,7 @@ export function MatchNode({ data }: NodeProps<MatchData>) {
   
   // Determine background color based on whether scores are known
   const getTeamColor = () => {
-    return hasScores ? 'bg-red-500' : 'bg-gray-500';
+    return hasScores ? 'bg-primary' : 'bg-gray-500';
   }
 
   // Determine what to show in the middle section
@@ -62,7 +62,7 @@ export function MatchNode({ data }: NodeProps<MatchData>) {
       </div>
 
       {/* Middle section - scores, arena, or status */}
-      <div className="bg-white px-4 py-2 text-center font-medium text-black text-sm border-y border-gray-200">
+      <div className="bg-white px-4 py-2 text-center font-medium text-white text-sm border-y border-gray-200">
         {getMiddleContent()}
       </div>
 
